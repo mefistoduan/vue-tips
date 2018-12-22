@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+</head>
+<body>
+<div id="app">
+    <button @click="createArr2()">123</button>
+    <ul v-for="(n,s) in ns">
+        {{n.select }}
+        <li v-for="(item,index) in n.li" :class="{'active':item.state}" @click="selectStyle(s, index)">
+            {{item.name}}
+            {{item.state}}
+        </li>
+    </ul>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="vue.js"></script>
+<script src="lodash.core.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                visible: false,
+                active: false,
+                state: false,
+                items: [
+                    {select: '亚瑟'},
+                    {select: '莫非'},
+                    {select: '泰勒'},
+                ],
+                lis: [
+                    {name: '第1行'},
+                    {name: '第2行'},
+                    {name: '第3行'},
+                ],
+                ns: [],
+                ts: [
+                    {
+                        select: '亚瑟',
+                        li: [{name: '第1行', state: false}, {name: '第2行', state: false}, {name: '第3行', state: false}]
+                    },
+                    {
+                        select: '泰勒',
+                        li: [{name: '第1行', state: false}, {name: '第2行', state: false}, {name: '第3行', state: false}]
+                    },
+                    {
+                        select: '吉姆',
+                        li: [{name: '第1行', state: false}, {name: '第2行', state: false}, {name: '第3行', state: false}]
+                    },
+                ],
+            }
+        },
+        mounted() {
+            // this.createArr2();
+        },
+        methods: {
+            createArr1() {
+                let items = this.items;
+                let li = this.lis;
+
+                function deepClone(obj){
+                    let objClone = Array.isArray(obj)?[]:{};
+                    if(obj && typeof obj==="object"){
+                        for(key in obj){
+                            if(obj.hasOwnProperty(key)){
+                                //判断ojb子元素是否为对象，如果是，递归复制
+                                if(obj[key]&&typeof obj[key] ==="object"){
+                                    objClone[key] = deepClone(obj[key]);
+                                }else{
+                                    //如果不是，简单复制
+                                    objClone[key] = obj[key];
+                                }
+                            }
+                        }
+                    }
+                    return objClone;
+                }
+
+                li.forEach((val, index) => {
+                    val["state"] = this.state;//增加
+                });
+
+                let thisLis = deepClone(this.lis);
+
+                items.forEach((val, index) => {
+                    val["li"] = thisLis;//增加
+                });
+                this.ns = items;
+            },
+            createArr2() {
+                console.log(123);
+                let items = _.cloneDeep(this.items);
+                let thisLis =_.cloneDeep(this.lis);
+                thisLis.forEach(function (thisLis) {
+                    Vue.set(thisLis,'active',false);
+                });
+                items.forEach((val, index) => {
+                    val["li"] = thisLis;//增加
+                });
+                this.ns = items;
+            },
+            selectStyle(s, index) {
+                console.log(this.ns);
+                this.ns[s]['li'][index]['state'] = !this.ns[s]['li'][index]['state'];
+
+            }
+        }
+    })
+</script>
+<style scope>
+    ul {
+        width: 200px;
+    }
+
+    li {
+        width: 100%;
+        overflow: hidden;
+        display: block;
+        margin: 0 auto;
+        background: #eee;
+        margin-bottom: 5px;
+    }
+
+    .active {
+        background: #0b6aff;
+    }
+</style>
+</html>
